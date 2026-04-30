@@ -31,8 +31,10 @@ export default function RequestDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+  const [actionError, setActionError] = useState('')
   const [notes, setNotes] = useState('')
   const [updating, setUpdating] = useState(false)
+  const [savingNotes, setSavingNotes] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -57,11 +59,36 @@ export default function RequestDetailPage() {
 
   async function handleStatus(status) {
     if (!request || updating) return
+    setActionError('')
+    setMessage('')
     setUpdating(true)
     const result = await updateRequestStatus(request.call_id, status, notes)
+    if (!result.success) {
+      setActionError(result.error || 'Failed to update status.')
+      setUpdating(false)
+      return
+    }
+
     setDetail((prev) => ({ ...prev, call: { ...prev.call, call_status: status } }))
-    setMessage(`Status updated to ${status.replace('_', ' ')} (${result.source}).`)
+    setMessage(`Status updated to ${status.replace('_', ' ')}.`)
     setUpdating(false)
+  }
+
+  async function handleSaveNotes() {
+    if (!request || savingNotes) return
+    setActionError('')
+    setMessage('')
+    setSavingNotes(true)
+
+    const result = await updateRequestStatus(request.call_id, request.call_status || 'new', notes)
+    if (!result.success) {
+      setActionError(result.error || 'Failed to save notes.')
+      setSavingNotes(false)
+      return
+    }
+
+    setMessage('Notes saved.')
+    setSavingNotes(false)
   }
 
   if (loading) return <LoadingState label="Loading request detail..." />
@@ -153,6 +180,14 @@ export default function RequestDetailPage() {
             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-lg text-slate-800"
             placeholder="Add note to send with status update"
           />
+          <button
+            type="button"
+            disabled={savingNotes}
+            onClick={handleSaveNotes}
+            className="mt-3 inline-flex rounded-xl bg-slate-700 px-4 py-2 text-base font-bold text-white transition hover:bg-slate-800 disabled:opacity-60"
+          >
+            {savingNotes ? 'Saving Notes...' : 'Save Notes'}
+          </button>
         </div>
 
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -170,6 +205,7 @@ export default function RequestDetailPage() {
         </div>
 
         {message ? <p className="mt-4 rounded-xl bg-emerald-100 p-3 text-base font-semibold text-emerald-800">{message}</p> : null}
+        {actionError ? <p className="mt-4 rounded-xl bg-rose-100 p-3 text-base font-semibold text-rose-800">{actionError}</p> : null}
       </article>
     </section>
   )

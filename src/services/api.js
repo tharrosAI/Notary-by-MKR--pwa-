@@ -117,8 +117,8 @@ export async function updateRequestStatus(call_id, status, michael_notes = '') {
     })
     const data = unwrapN8nResponse(rawData)
     return { success: true, source: 'api', data }
-  } catch {
-    return { success: true, source: 'mock', data: payload }
+  } catch (error) {
+    return { success: false, source: 'mock', data: payload, error: error.message || 'Unable to update status.' }
   }
 }
 
