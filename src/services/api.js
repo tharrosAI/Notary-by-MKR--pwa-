@@ -8,6 +8,11 @@ const endpoints = {
   metrics: 'https://automation.tharrosai.com/webhook/notary-metrics',
 }
 
+function unwrapN8nResponse(data) {
+  if (Array.isArray(data)) return data[0] || null
+  return data
+}
+
 function normalizeBoolean(value) {
   if (typeof value === 'boolean') return value
   if (typeof value === 'string') return ['true', 'yes', '1'].includes(value.toLowerCase())
@@ -76,8 +81,10 @@ export async function getRequests() {
 export async function getRequestDetail(callId) {
   try {
     const url = `${endpoints.requestDetail}?call_id=${encodeURIComponent(callId)}`
-    const data = await fetchJson(url)
-    if (!data?.success || !data.call) throw new Error('Invalid detail payload')
+    const rawData = await fetchJson(url)
+    console.log('notary-request-detail raw response:', rawData)
+    const data = unwrapN8nResponse(rawData)
+    if (!data || !data.success || !data.call) throw new Error('Invalid detail payload')
 
     return {
       success: true,
@@ -104,10 +111,11 @@ export async function updateRequestStatus(call_id, status, michael_notes = '') {
   const payload = { call_id, status, michael_notes }
 
   try {
-    const data = await fetchJson(endpoints.requestStatus, {
+    const rawData = await fetchJson(endpoints.requestStatus, {
       method: 'POST',
       body: JSON.stringify(payload),
     })
+    const data = unwrapN8nResponse(rawData)
     return { success: true, source: 'api', data }
   } catch {
     return { success: true, source: 'mock', data: payload }
@@ -116,8 +124,11 @@ export async function updateRequestStatus(call_id, status, michael_notes = '') {
 
 export async function getMetrics() {
   try {
-    const data = await fetchJson(endpoints.metrics)
-    return { metrics: { ...mockMetrics, ...data }, source: 'api', error: '' }
+    const rawData = await fetchJson(endpoints.metrics)
+    console.log('notary-metrics raw response:', rawData)
+    const data = unwrapN8nResponse(rawData)
+    if (!data || typeof data !== 'object') throw new Error('Invalid metrics payload')
+    return { metrics: data, source: 'api', error: '' }
   } catch (error) {
     return { metrics: mockMetrics, source: 'mock', error: error.message }
   }
