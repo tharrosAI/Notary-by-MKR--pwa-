@@ -109,16 +109,37 @@ export async function getRequestDetail(callId) {
 
 export async function updateRequestStatus(call_id, status, michael_notes = '') {
   const payload = { call_id, status, michael_notes }
+  const token = getToken()
 
   try {
-    const rawData = await fetchJson(endpoints.requestStatus, {
+    const response = await fetch(endpoints.requestStatus, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : '',
+      },
       body: JSON.stringify(payload),
     })
-    const data = unwrapN8nResponse(rawData)
-    return { success: true, source: 'api', data }
-  } catch (error) {
-    return { success: false, source: 'mock', data: payload, error: error.message || 'Unable to update status.' }
+
+    if (!response.ok) {
+      throw new Error(`Request failed (${response.status})`)
+    }
+
+    const text = await response.text()
+    let data = { success: true }
+
+    if (text) {
+      try {
+        data = JSON.parse(text)
+      } catch {
+        data = { success: true }
+      }
+    }
+
+    const unwrapped = unwrapN8nResponse(data) || { success: true }
+    return { success: true, source: 'api', data: unwrapped }
+  } catch {
+    return { success: false, source: 'mock', data: payload, error: 'Unable to update status.' }
   }
 }
 
