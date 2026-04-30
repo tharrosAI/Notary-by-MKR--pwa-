@@ -46,14 +46,14 @@ export default function DashboardPage() {
   }, [])
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-8">
       {loading ? <LoadingState label="Loading requests and metrics..." /> : null}
       {!loading && error ? <ErrorState message={error} /> : null}
 
       {!loading && metrics ? (
         <div>
-          <h2 className="mb-4 text-2xl font-bold text-slate-900">Metrics</h2>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+          <h2 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-slate-400">Metrics</h2>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
             <MetricCard label="Total Calls" value={metrics.totalCalls} />
             <MetricCard label="Appointments" value={metrics.appointmentRequests} />
             <MetricCard label="Needs Callback" value={metrics.needsCallback} />
@@ -65,14 +65,14 @@ export default function DashboardPage() {
           <button
             type="button"
             onClick={() => setShowAdvancedMetrics((current) => !current)}
-            className="mt-4 text-sm font-semibold text-slate-700 underline underline-offset-4"
+            className="mt-4 text-[13px] font-medium text-slate-400 transition-colors hover:text-slate-600"
           >
             {showAdvancedMetrics ? 'Hide Advanced Metrics' : 'Show Advanced Metrics'}
           </button>
 
           {showAdvancedMetrics ? (
-            <div className="mt-4 rounded-2xl border border-white/70 bg-white/40 p-4 backdrop-blur-md">
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white p-4 transition-all duration-300 ease-out">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                 <MetricCard label="Total Minutes" value={numberWithMaxTwoDecimals(metrics.totalMinutes)} />
                 <MetricCard label="Pricing Questions" value={metrics.pricingQuestions} />
                 <MetricCard label="Availability Questions" value={metrics.availabilityQuestions} />
@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
       {!loading ? (
         <div>
-          <h2 className="mb-4 text-2xl font-bold text-slate-900">Incoming Requests</h2>
+          <h2 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-slate-400">Incoming Requests</h2>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {requests.map((request) => (
               <RequestCard key={request.call_id} request={request} />

@@ -16,11 +16,12 @@ const actions = [
 
 function Field({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-start gap-3 rounded-xl bg-slate-50/80 p-3">
-      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" />
-      <p className="text-base text-slate-700">
-        <span className="font-semibold text-slate-900">{label}:</span> {value || 'N/A'}
-      </p>
+    <div className="rounded-lg border border-slate-200 bg-white p-3">
+      <div className="flex items-start gap-2">
+        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">{label}</p>
+      </div>
+      <p className="mt-1 text-[14px] text-slate-900">{value || 'N/A'}</p>
     </div>
   )
 }
@@ -108,11 +109,11 @@ export default function RequestDetailPage() {
     <section className="space-y-4">
       {error ? <ErrorState message={error} /> : null}
 
-      <article className="rounded-[20px] border border-white/70 bg-white/65 p-6 shadow-[0_28px_60px_-28px_rgba(15,23,42,0.55)] backdrop-blur-md">
+      <article className="rounded-2xl border border-slate-200 bg-white px-6 py-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900">{request.caller_name}</h2>
-            <p className="mt-1 text-base text-slate-700">Call ID: {request.call_id}</p>
+            <h2 className="text-[18px] font-bold text-slate-900">{request.caller_name}</h2>
+            <p className="mt-1 text-[13px] text-slate-400">Call ID: {request.call_id}</p>
           </div>
           <StatusBadge status={request.call_status} />
         </div>
@@ -129,34 +130,36 @@ export default function RequestDetailPage() {
         </div>
 
         <div className="mt-4 space-y-3">
-          <div className="rounded-xl bg-slate-50/80 p-4">
-            <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Call Summary</p>
-            <p className="mt-1 text-base text-slate-700">{request.call_summary || 'No summary available.'}</p>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Call Summary</p>
+            <p className="mt-1 text-[14px] text-slate-900">{request.call_summary || 'No summary available.'}</p>
           </div>
 
-          <div className="rounded-xl bg-slate-50/80 p-4">
-            <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Missing Info</p>
-            <p className="mt-1 text-base text-slate-700">{request.missing_info || 'None noted.'}</p>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Missing Info</p>
+            <p className="mt-1 text-[14px] text-slate-900">{request.missing_info || 'None noted.'}</p>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="rounded-xl bg-slate-50/80 p-4 text-base text-slate-700">
-              <p className="font-semibold text-slate-900">Price Mentioned</p>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[14px] text-slate-900">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Price Mentioned</p>
               <p>{request.price_mentioned ? 'Yes' : 'No'}</p>
             </div>
-            <div className="rounded-xl bg-slate-50/80 p-4 text-base text-slate-700">
-              <p className="font-semibold text-slate-900">Quoted Price</p>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[14px] text-slate-900">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Quoted Price</p>
               <p>{request.quoted_price ? `$${request.quoted_price}` : 'N/A'}</p>
             </div>
-            <div className="rounded-xl bg-slate-50/80 p-4 text-base text-slate-700">
-              <p className="font-semibold text-slate-900">Confidence Score</p>
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[14px] text-slate-900">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Confidence Score</p>
               <p>{request.confidence_score || 0}</p>
             </div>
           </div>
 
-          <div className="rounded-xl bg-slate-50/80 p-4">
-            <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Transcript</p>
-            <p className="mt-1 whitespace-pre-wrap text-base text-slate-700">{detail?.transcript || 'Transcript unavailable.'}</p>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Transcript</p>
+            <p className="mt-1 max-h-[240px] overflow-y-auto whitespace-pre-wrap text-[14px] text-slate-900">
+              {detail?.transcript || 'Transcript unavailable.'}
+            </p>
           </div>
 
           {detail?.recording_url ? (
@@ -164,7 +167,7 @@ export default function RequestDetailPage() {
               href={detail.recording_url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex rounded-xl bg-slate-700 px-4 py-2 text-base font-semibold text-white"
+              className="inline-flex rounded-lg border border-slate-200 bg-white px-4 py-2 text-[14px] font-semibold text-slate-900"
             >
               Open Recording
             </a>
@@ -172,19 +175,19 @@ export default function RequestDetailPage() {
         </div>
 
         <div className="mt-5">
-          <label className="mb-2 block text-lg font-semibold text-slate-900">Michael Notes</label>
+          <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Michael Notes</label>
           <textarea
             rows={4}
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-lg text-slate-800"
+            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-[14px] text-slate-900"
             placeholder="Add note to send with status update"
           />
           <button
             type="button"
             disabled={savingNotes}
             onClick={handleSaveNotes}
-            className="mt-3 inline-flex rounded-xl bg-slate-700 px-4 py-2 text-base font-bold text-white transition hover:bg-slate-800 disabled:opacity-60"
+            className="mt-3 inline-flex rounded-lg bg-slate-900 px-4 py-2 text-[14px] font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
           >
             {savingNotes ? 'Saving Notes...' : 'Save Notes'}
           </button>
@@ -197,15 +200,19 @@ export default function RequestDetailPage() {
               type="button"
               disabled={updating}
               onClick={() => handleStatus(action.status)}
-              className="rounded-xl bg-slate-800 px-4 py-3 text-lg font-bold text-white transition hover:bg-slate-900 disabled:opacity-60"
+              className={`rounded-lg px-4 py-2.5 text-[14px] font-semibold transition disabled:opacity-60 ${
+                action.status === 'approved'
+                  ? 'bg-slate-900 text-white hover:opacity-90'
+                  : 'border border-slate-200 bg-white text-slate-900 hover:bg-slate-50'
+              }`}
             >
               {action.label}
             </button>
           ))}
         </div>
 
-        {message ? <p className="mt-4 rounded-xl bg-emerald-100 p-3 text-base font-semibold text-emerald-800">{message}</p> : null}
-        {actionError ? <p className="mt-4 rounded-xl bg-rose-100 p-3 text-base font-semibold text-rose-800">{actionError}</p> : null}
+        {message ? <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-[13px] font-medium text-emerald-800">{message}</p> : null}
+        {actionError ? <p className="mt-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-[13px] font-medium text-rose-800">{actionError}</p> : null}
       </article>
     </section>
   )

@@ -4,10 +4,10 @@ import StatusBadge from './StatusBadge'
 
 function Field({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-start gap-3">
-      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" />
-      <p className="text-base text-slate-700">
-        <span className="font-semibold text-slate-800">{label}:</span> {value || 'N/A'}
+    <div className="flex items-start gap-2">
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+      <p className="text-[13px] text-slate-700">
+        <span className="font-semibold text-slate-900">{label}:</span> {value || 'N/A'}
       </p>
     </div>
   )
@@ -15,11 +15,13 @@ function Field({ icon: Icon, label, value }) {
 
 export default function RequestCard({ request }) {
   return (
-    <article className="group rounded-[20px] border border-white/70 bg-white/60 p-6 shadow-[0_28px_60px_-28px_rgba(15,23,42,0.55)] backdrop-blur-md transition hover:-translate-y-1 hover:border-cyan-100 hover:shadow-[0_30px_65px_-26px_rgba(22,78,99,0.45)]">
+    <article className="rounded-2xl border border-slate-200 bg-white px-6 py-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-bold leading-tight text-slate-900">{request.caller_name}</h2>
-          <p className="mt-1 text-base text-slate-700">{request.service_type || 'Notary Service Request'}</p>
+          <h2 className="text-[18px] font-bold leading-tight text-slate-900">{request.caller_name}</h2>
+          <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+            {request.service_type || 'Notary Service Request'}
+          </p>
         </div>
         <StatusBadge status={request.call_status} />
       </div>
@@ -33,19 +35,21 @@ export default function RequestCard({ request }) {
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <p className="rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700">
+        <p className="rounded-full bg-slate-100 px-3 py-1 text-[12px] font-medium text-slate-500">
           Urgency: {request.urgency || 'normal'}
         </p>
-        <p className="rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700">
+        <p className="rounded-full bg-slate-100 px-3 py-1 text-[12px] font-medium text-slate-500">
           Callback: {request.needs_michael_callback ? 'Yes' : 'No'}
         </p>
       </div>
 
-      <p className="mt-4 line-clamp-3 text-base text-slate-700">{request.call_summary || 'No summary available.'}</p>
+      <p className="mt-4 border-t border-slate-100 pt-4 text-[13px] text-slate-700">
+        {request.call_summary || 'No summary available.'}
+      </p>
 
       <Link
         to={`/request/${request.call_id}`}
-        className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-slate-800 px-4 py-3 text-xl font-bold text-white transition hover:bg-slate-900"
+        className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-slate-900 px-4 py-3 text-[14px] font-semibold text-white transition hover:opacity-90"
       >
         Open Request
       </Link>

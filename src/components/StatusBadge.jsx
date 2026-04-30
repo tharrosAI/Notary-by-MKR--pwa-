@@ -1,11 +1,11 @@
 const styles = {
-  new: 'bg-amber-100 text-amber-800',
-  pending: 'bg-amber-100 text-amber-800',
-  approved: 'bg-emerald-100 text-emerald-800',
-  denied: 'bg-rose-100 text-rose-800',
+  new: 'bg-[#fef9c3] text-[#854d0e]',
+  pending: 'bg-[#fef9c3] text-[#854d0e]',
+  approved: 'bg-[#dcfce7] text-[#15803d]',
+  denied: 'bg-[#fee2e2] text-[#b91c1c]',
   called: 'bg-sky-100 text-sky-800',
-  needs_callback: 'bg-violet-100 text-violet-800',
-  closed: 'bg-slate-200 text-slate-700',
+  needs_callback: 'bg-[#fff7ed] text-[#c2410c]',
+  closed: 'bg-slate-100 text-slate-600',
 }
 
 const labels = {
@@ -21,7 +21,7 @@ const labels = {
 export default function StatusBadge({ status }) {
   const key = (status || 'new').toLowerCase()
   return (
-    <span className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${styles[key] || styles.new}`}>
+    <span className={`inline-flex rounded-full px-3 py-1 text-[12px] font-semibold ${styles[key] || styles.new}`}>
       {labels[key] || status}
     </span>
   )
