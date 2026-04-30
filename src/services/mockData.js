@@ -1,0 +1,45 @@
+export const mockRequests = [
+  {
+    id: 'REQ-1001',
+    clientName: 'Helen Brooks',
+    serviceType: 'Real Estate Closing',
+    date: '2026-05-02',
+    time: '10:30 AM',
+    location: 'Macon, GA',
+    status: 'Pending',
+    phone: '(478) 555-0141',
+    notes: ['Client requested large-print forms.'],
+  },
+  {
+    id: 'REQ-1002',
+    clientName: 'James Porter',
+    serviceType: 'Power of Attorney',
+    date: '2026-05-02',
+    time: '01:00 PM',
+    location: 'Warner Robins, GA',
+    status: 'Called',
+    phone: '(478) 555-0148',
+    notes: ['Follow-up call completed.'],
+  },
+  {
+    id: 'REQ-1003',
+    clientName: 'Donna Fields',
+    serviceType: 'Hospital Notarization',
+    date: '2026-05-03',
+    time: '09:15 AM',
+    location: 'Macon, GA',
+    status: 'Approved',
+    phone: '(478) 555-0199',
+    notes: [],
+  },
+]
+
+export const mockAvailability = {
+  monday: '8:30 AM - 4:30 PM',
+  tuesday: '8:30 AM - 4:30 PM',
+  wednesday: '8:30 AM - 4:30 PM',
+  thursday: '8:30 AM - 4:30 PM',
+  friday: '8:30 AM - 2:00 PM',
+  saturday: 'By Appointment',
+  sunday: 'Unavailable',
+}

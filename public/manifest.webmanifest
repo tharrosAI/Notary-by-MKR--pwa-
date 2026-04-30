@@ -1,0 +1,17 @@
+{
+  "name": "Notary by MKR Dashboard",
+  "short_name": "Notary MKR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#edf3f5",
+  "theme_color": "#1f6f7a",
+  "description": "Mobile dashboard for managing notary requests.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
