@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom'
 import './index.css'
 import { isAuthenticated } from './utils/auth'
 import AppLayout from './components/AppLayout'
@@ -13,7 +13,7 @@ function ProtectedRoute({ children }) {
   return isAuthenticated() ? children : <Navigate to="/login" replace />
 }
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/login',
     element: <LoginPage />,
@@ -41,6 +41,6 @@ createRoot(document.getElementById('root')).render(
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {})
+    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => {})
   })
 }
