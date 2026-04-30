@@ -11,45 +11,36 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-transparent">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
+      <header className="sticky top-0 z-20 border-b border-white/60 bg-white/55 backdrop-blur-md">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-brand-600">Notary by MKR</p>
-            <h1 className="text-2xl font-bold text-ink">Dashboard</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Notary by MKR</p>
+            <h1 className="text-3xl font-bold text-slate-900">CRM Dashboard</h1>
           </div>
           <button
             onClick={handleLogout}
-            className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-base font-semibold text-slate-700"
+            className="rounded-xl border border-white/70 bg-white/70 px-4 py-2 text-base font-semibold text-slate-700"
           >
-            Log Out
+            Logout
           </button>
         </div>
-        <nav className="mx-auto flex max-w-3xl gap-2 px-4 pb-4">
+
+        <nav className="mx-auto flex w-full max-w-6xl gap-2 px-4 pb-4 sm:px-6">
           <NavLink
             to="/"
             end
             className={({ isActive }) =>
-              `rounded-full px-4 py-2 text-base font-semibold ${
-                isActive ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-700'
+              `rounded-full px-4 py-2 text-base font-semibold transition ${
+                isActive ? 'bg-slate-800 text-white' : 'bg-white/70 text-slate-700'
               }`
             }
           >
-            Requests
-          </NavLink>
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `rounded-full px-4 py-2 text-base font-semibold ${
-                isActive ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-700'
-              }`
-            }
-          >
-            Availability
+            Dashboard
           </NavLink>
         </nav>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl px-4 py-5">
+      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
         <Outlet />
       </main>
     </div>

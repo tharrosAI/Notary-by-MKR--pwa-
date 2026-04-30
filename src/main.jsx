@@ -2,12 +2,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom'
 import './index.css'
-import { isAuthenticated } from './utils/auth'
 import AppLayout from './components/AppLayout'
 import DashboardPage from './pages/DashboardPage'
 import LoginPage from './pages/LoginPage'
 import RequestDetailPage from './pages/RequestDetailPage'
-import SettingsPage from './pages/SettingsPage'
+import { isAuthenticated } from './utils/auth'
 
 function ProtectedRoute({ children }) {
   return isAuthenticated() ? children : <Navigate to="/login" replace />
@@ -28,7 +27,6 @@ const router = createHashRouter([
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'request/:id', element: <RequestDetailPage /> },
-      { path: 'settings', element: <SettingsPage /> },
     ],
   },
 ])

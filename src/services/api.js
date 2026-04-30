@@ -1,13 +1,40 @@
 import { getToken } from '../utils/auth'
-import { mockAvailability, mockRequests } from './mockData'
-
-const API_BASE = 'https://YOUR-N8N-HOST/webhook'
+import { mockDetail, mockMetrics, mockRequests } from './mockData'
 
 const endpoints = {
-  login: `${API_BASE}/notary-login`,
-  requests: `${API_BASE}/notary-requests`,
-  requestAction: `${API_BASE}/notary-request-action`,
-  saveAvailability: `${API_BASE}/notary-availability`,
+  requests: 'https://automation.tharrosai.com/webhook/notary-requests',
+  requestDetail: 'https://automation.tharrosai.com/webhook/notary-request-detail',
+  requestStatus: 'https://automation.tharrosai.com/webhook/notary-request-status',
+  metrics: 'https://automation.tharrosai.com/webhook/notary-metrics',
+}
+
+function normalizeBoolean(value) {
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'string') return ['true', 'yes', '1'].includes(value.toLowerCase())
+  return Boolean(value)
+}
+
+function normalizeRequest(request) {
+  return {
+    call_id: String(request.call_id || ''),
+    timestamp: request.timestamp || '',
+    caller_phone: request.caller_phone || '',
+    caller_name: request.caller_name || 'Unknown Caller',
+    call_type: request.call_type || '',
+    service_type: request.service_type || '',
+    document_type: request.document_type || '',
+    location_address: request.location_address || '',
+    preferred_date: request.preferred_date || '',
+    preferred_time: request.preferred_time || '',
+    urgency: request.urgency || 'normal',
+    needs_michael_callback: normalizeBoolean(request.needs_michael_callback),
+    missing_info: request.missing_info || '',
+    call_summary: request.call_summary || '',
+    price_mentioned: normalizeBoolean(request.price_mentioned),
+    quoted_price: Number(request.quoted_price || 0),
+    confidence_score: Number(request.confidence_score || 0),
+    call_status: (request.call_status || 'new').toLowerCase(),
+  }
 }
 
 async function fetchJson(url, options = {}) {
@@ -29,60 +56,71 @@ async function fetchJson(url, options = {}) {
 }
 
 export async function login(credentials) {
-  try {
-    return await fetchJson(endpoints.login, {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    })
-  } catch {
-    if (credentials.username && credentials.password) {
-      return { token: 'mock-notary-token', user: { name: 'MKR Notary' } }
-    }
-    throw new Error('Please enter username and password.')
+  if (credentials.username && credentials.password) {
+    return { token: 'mock-notary-token', user: { name: 'MKR Notary' } }
   }
+  throw new Error('Please enter username and password.')
 }
 
 export async function getRequests() {
   try {
     const data = await fetchJson(endpoints.requests)
-    return Array.isArray(data) ? data : mockRequests
-  } catch {
-    return mockRequests
+    const records = Array.isArray(data) ? data : data?.requests
+    if (!Array.isArray(records)) throw new Error('Invalid requests payload')
+    return { requests: records.map(normalizeRequest), source: 'api', error: '' }
+  } catch (error) {
+    return { requests: mockRequests.map(normalizeRequest), source: 'mock', error: error.message }
   }
 }
 
-export async function getRequestById(id) {
-  const requests = await getRequests()
-  return requests.find((request) => request.id === id)
-}
-
-export async function postRequestAction(id, action, note) {
+export async function getRequestDetail(callId) {
   try {
-    await fetchJson(endpoints.requestAction, {
-      method: 'POST',
-      body: JSON.stringify({ id, action, note }),
-    })
-  } catch {
-    return { success: true, source: 'mock' }
-  }
+    const url = `${endpoints.requestDetail}?call_id=${encodeURIComponent(callId)}`
+    const data = await fetchJson(url)
+    if (!data?.success || !data.call) throw new Error('Invalid detail payload')
 
-  return { success: true, source: 'api' }
+    return {
+      success: true,
+      call_id: data.call_id || callId,
+      call: normalizeRequest(data.call),
+      transcript: data.transcript || '',
+      recording_url: data.recording_url || '',
+      source: 'api',
+      error: '',
+    }
+  } catch (error) {
+    const fallbackCall = mockRequests.find((request) => request.call_id === callId) || mockRequests[0]
+    return {
+      ...mockDetail,
+      call_id: callId,
+      call: normalizeRequest(fallbackCall),
+      source: 'mock',
+      error: error.message,
+    }
+  }
 }
 
-export async function saveAvailability(availability) {
+export async function updateRequestStatus(call_id, status, michael_notes = '') {
+  const payload = { call_id, status, michael_notes }
+
   try {
-    await fetchJson(endpoints.saveAvailability, {
+    const data = await fetchJson(endpoints.requestStatus, {
       method: 'POST',
-      body: JSON.stringify(availability),
+      body: JSON.stringify(payload),
     })
-    return { success: true, source: 'api' }
+    return { success: true, source: 'api', data }
   } catch {
-    return { success: true, source: 'mock' }
+    return { success: true, source: 'mock', data: payload }
   }
 }
 
-export function getDefaultAvailability() {
-  return mockAvailability
+export async function getMetrics() {
+  try {
+    const data = await fetchJson(endpoints.metrics)
+    return { metrics: { ...mockMetrics, ...data }, source: 'api', error: '' }
+  } catch (error) {
+    return { metrics: mockMetrics, source: 'mock', error: error.message }
+  }
 }
 
 export { endpoints }
