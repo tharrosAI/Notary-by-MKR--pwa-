@@ -165,7 +165,7 @@ export default function RequestDetailPage() {
             <p className="mt-1 text-[14px] text-slate-900">{request.call_summary || 'No summary available.'}</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[14px] text-slate-900">
               <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Price Mentioned</p>
               <p>{request.price_mentioned ? 'Yes' : 'No'}</p>
@@ -173,10 +173,6 @@ export default function RequestDetailPage() {
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[14px] text-slate-900">
               <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Quoted Price</p>
               <p>{request.quoted_price ? `$${request.quoted_price}` : 'N/A'}</p>
-            </div>
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[14px] text-slate-900">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Confidence Score</p>
-              <p>{request.confidence_score || 0}</p>
             </div>
           </div>
 

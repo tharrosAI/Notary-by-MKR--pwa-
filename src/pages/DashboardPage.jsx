@@ -14,6 +14,24 @@ function numberWithMaxTwoDecimals(value) {
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(numeric)
 }
 
+function parseQuotedPrice(value) {
+  if (value === null || value === undefined) return null
+  if (typeof value === 'string') {
+    const cleaned = value.trim()
+    if (!cleaned || ['na', 'n/a'].includes(cleaned.toLowerCase())) return null
+    const numeric = Number(cleaned.replace(/\$/g, '').replace(/,/g, ''))
+    return Number.isFinite(numeric) ? numeric : null
+  }
+  const numeric = Number(value)
+  return Number.isFinite(numeric) ? numeric : null
+}
+
+function toBooleanYes(value) {
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'string') return ['true', 'yes', '1'].includes(value.toLowerCase())
+  return Boolean(value)
+}
+
 export default function DashboardPage() {
   const [requests, setRequests] = useState([])
   const [metrics, setMetrics] = useState(null)
@@ -52,12 +70,36 @@ export default function DashboardPage() {
     })
 
     return filtered.sort((a, b) => {
+      if (sortOrder === 'highest_quote' || sortOrder === 'lowest_quote') {
+        const quoteA = parseQuotedPrice(a.quoted_price)
+        const quoteB = parseQuotedPrice(b.quoted_price)
+        const valA = quoteA === null ? -Infinity : quoteA
+        const valB = quoteB === null ? -Infinity : quoteB
+        return sortOrder === 'highest_quote' ? valB - valA : valA - valB
+      }
+
       const timeA = new Date(a.timestamp || 0).getTime()
       const timeB = new Date(b.timestamp || 0).getTime()
       if (sortOrder === 'oldest') return timeA - timeB
       return timeB - timeA
     })
   }, [requests, sortOrder, statusFilter])
+
+  const estimatedRevenue = useMemo(
+    () => requests.reduce((sum, request) => sum + (parseQuotedPrice(request.quoted_price) ?? 0), 0),
+    [requests],
+  )
+
+  const bookingOpportunities = useMemo(
+    () =>
+      requests.filter((request) => {
+        const callType = String(request.call_type || '').toLowerCase()
+        const status = String(request.call_status || '').toLowerCase()
+        const callback = request.needs_michael_callback ?? request.needs_micheal_callback
+        return callType === 'appointment_request' || status === 'approved' || toBooleanYes(callback)
+      }).length,
+    [requests],
+  )
 
   const metricValue = metrics || {}
 
@@ -71,16 +113,10 @@ export default function DashboardPage() {
         <div>
           <h2 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-slate-400">Metrics</h2>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+            <MetricCard label="Estimated Revenue (Quoted)" value={currency(estimatedRevenue)} />
+            <MetricCard label="Booking Opportunities" value={bookingOpportunities} />
             <MetricCard label="Total Calls" value={metricValue.totalCalls ?? '—'} />
-            <MetricCard label="Appointments" value={metricValue.appointmentRequests ?? '—'} />
-            <MetricCard label="Needs Callback" value={metricValue.needsCallback ?? '—'} />
-            <MetricCard label="Approved" value={metricValue.approvedRequests ?? '—'} />
-            <MetricCard label="Total Cost" value={metrics ? currency(metricValue.totalCost) : '—'} />
-            <MetricCard
-              label="Avg Handle"
-              value={metrics ? numberWithMaxTwoDecimals(metricValue.averageHandleTime) : '—'}
-              helper="minutes"
-            />
+            <MetricCard label="Cost Per Lead" value={metrics ? currency(metricValue.costPerLead) : '—'} />
           </div>
 
           <button
@@ -88,19 +124,27 @@ export default function DashboardPage() {
             onClick={() => setShowAdvancedMetrics((current) => !current)}
             className="mt-4 rounded-full border border-slate-200 bg-white px-3 py-2 text-[13px] font-medium text-slate-900 transition hover:bg-slate-50"
           >
-            {showAdvancedMetrics ? 'Hide Advanced Metrics' : 'Show Advanced Metrics'}
+            {showAdvancedMetrics ? 'Hide System Metrics' : 'Show System Metrics'}
           </button>
 
           {showAdvancedMetrics ? (
             <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white p-4 transition-all duration-300 ease-out">
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                <MetricCard label="Appointments" value={metricValue.appointmentRequests ?? '—'} />
+                <MetricCard label="Needs Callback" value={metricValue.needsCallback ?? '—'} />
+                <MetricCard label="Approved" value={metricValue.approvedRequests ?? '—'} />
+                <MetricCard label="Total Cost" value={metrics ? currency(metricValue.totalCost) : '—'} />
+                <MetricCard
+                  label="Avg Handle"
+                  value={metrics ? numberWithMaxTwoDecimals(metricValue.averageHandleTime) : '—'}
+                  helper="minutes"
+                />
                 <MetricCard label="Total Minutes" value={metrics ? numberWithMaxTwoDecimals(metricValue.totalMinutes) : '—'} />
                 <MetricCard label="Pricing Questions" value={metricValue.pricingQuestions ?? '—'} />
                 <MetricCard label="Availability Questions" value={metricValue.availabilityQuestions ?? '—'} />
                 <MetricCard label="General Questions" value={metricValue.generalQuestions ?? '—'} />
                 <MetricCard label="Spam Filtered" value={metricValue.spamFiltered ?? '—'} />
                 <MetricCard label="Denied Requests" value={metricValue.deniedRequests ?? '—'} />
-                <MetricCard label="Cost Per Lead" value={metrics ? currency(metricValue.costPerLead) : '—'} />
               </div>
             </div>
           ) : null}
@@ -119,6 +163,8 @@ export default function DashboardPage() {
               >
                 <option value="newest">Newest first</option>
                 <option value="oldest">Oldest first</option>
+                <option value="highest_quote">Highest quoted value</option>
+                <option value="lowest_quote">Lowest quoted value</option>
               </select>
             </label>
 

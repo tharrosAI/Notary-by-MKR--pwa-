@@ -19,6 +19,7 @@ function normalizeBoolean(value) {
 }
 
 function normalizeRequest(request) {
+  const callbackValue = request.needs_michael_callback ?? request.needs_micheal_callback
   return {
     call_id: String(request.call_id || ''),
     timestamp: request.timestamp || '',
@@ -31,7 +32,7 @@ function normalizeRequest(request) {
     preferred_date: request.preferred_date || '',
     preferred_time: request.preferred_time || '',
     urgency: request.urgency || 'normal',
-    needs_michael_callback: normalizeBoolean(request.needs_michael_callback),
+    needs_michael_callback: normalizeBoolean(callbackValue),
     call_summary: request.call_summary || '',
     price_mentioned: normalizeBoolean(request.price_mentioned),
     quoted_price: Number(request.quoted_price || 0),
