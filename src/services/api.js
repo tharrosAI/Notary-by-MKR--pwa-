@@ -1,5 +1,4 @@
 import { getToken } from '../utils/auth'
-import { mockDetail, mockMetrics, mockRequests } from './mockData'
 
 const endpoints = {
   requests: 'https://automation.tharrosai.com/webhook/notary-requests',
@@ -33,7 +32,6 @@ function normalizeRequest(request) {
     preferred_time: request.preferred_time || '',
     urgency: request.urgency || 'normal',
     needs_michael_callback: normalizeBoolean(request.needs_michael_callback),
-    missing_info: request.missing_info || '',
     call_summary: request.call_summary || '',
     price_mentioned: normalizeBoolean(request.price_mentioned),
     quoted_price: Number(request.quoted_price || 0),
@@ -74,7 +72,7 @@ export async function getRequests() {
     if (!Array.isArray(records)) throw new Error('Invalid requests payload')
     return { requests: records.map(normalizeRequest), source: 'api', error: '' }
   } catch (error) {
-    return { requests: mockRequests.map(normalizeRequest), source: 'mock', error: error.message }
+    return { requests: [], source: 'unavailable', error: error.message }
   }
 }
 
@@ -96,13 +94,14 @@ export async function getRequestDetail(callId) {
       error: '',
     }
   } catch (error) {
-    const fallbackCall = mockRequests.find((request) => request.call_id === callId) || mockRequests[0]
     return {
-      ...mockDetail,
       call_id: callId,
-      call: normalizeRequest(fallbackCall),
-      source: 'mock',
+      call: null,
+      transcript: '',
+      recording_url: '',
+      source: 'unavailable',
       error: error.message,
+      success: false,
     }
   }
 }
@@ -151,7 +150,7 @@ export async function getMetrics() {
     if (!data || typeof data !== 'object') throw new Error('Invalid metrics payload')
     return { metrics: data, source: 'api', error: '' }
   } catch (error) {
-    return { metrics: mockMetrics, source: 'mock', error: error.message }
+    return { metrics: null, source: 'unavailable', error: error.message }
   }
 }
 

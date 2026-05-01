@@ -49,6 +49,7 @@ export default function RequestCard({ request }) {
 
       <Link
         to={`/request/${request.call_id}`}
+        state={{ request }}
         className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-slate-900 px-4 py-3 text-[14px] font-semibold text-white transition hover:opacity-90"
       >
         Open Request

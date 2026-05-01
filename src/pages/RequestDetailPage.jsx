@@ -1,6 +1,6 @@
 import { AlertTriangle, Calendar, Clock3, FileText, MapPin, Phone } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import ErrorState from '../components/ErrorState'
 import LoadingState from '../components/LoadingState'
 import StatusBadge from '../components/StatusBadge'
@@ -28,33 +28,58 @@ function Field({ icon: Icon, label, value }) {
 
 export default function RequestDetailPage() {
   const { id } = useParams()
+  const location = useLocation()
+  const seededRequest = location.state?.request || null
   const [detail, setDetail] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!seededRequest)
+  const [loadingFreshDetail, setLoadingFreshDetail] = useState(Boolean(seededRequest))
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [actionError, setActionError] = useState('')
   const [notes, setNotes] = useState('')
   const [updating, setUpdating] = useState(false)
   const [savingNotes, setSavingNotes] = useState(false)
+  const [showTranscript, setShowTranscript] = useState(false)
+
+  useEffect(() => {
+    if (seededRequest) {
+      setDetail((prev) => ({
+        success: true,
+        call_id: seededRequest.call_id,
+        call: seededRequest,
+        transcript: prev?.transcript || '',
+        recording_url: prev?.recording_url || '',
+        source: prev?.source || 'seeded',
+        error: '',
+      }))
+    }
+  }, [seededRequest])
 
   useEffect(() => {
     let active = true
 
     async function loadDetail() {
-      setLoading(true)
+      if (!seededRequest) setLoading(true)
+      setLoadingFreshDetail(Boolean(seededRequest))
       const result = await getRequestDetail(id)
       if (!active) return
 
-      setDetail(result)
-      setError(result.source === 'mock' ? 'Detail API unavailable, showing fallback record.' : '')
+      if (result.success && result.call) {
+        setDetail(result)
+        setError('')
+      } else {
+        setError('Request unavailable.')
+      }
+
       setLoading(false)
+      setLoadingFreshDetail(false)
     }
 
     loadDetail()
     return () => {
       active = false
     }
-  }, [id])
+  }, [id, seededRequest])
 
   const request = useMemo(() => detail?.call, [detail])
 
@@ -92,12 +117,12 @@ export default function RequestDetailPage() {
     setSavingNotes(false)
   }
 
-  if (loading) return <LoadingState label="Loading request detail..." />
+  if (loading) return <LoadingState label="Loading request..." />
 
   if (!request) {
     return (
       <section className="space-y-4">
-        <ErrorState message="Request detail could not be loaded." />
+        <ErrorState message="Request unavailable." />
         <Link to="/" className="inline-flex rounded-xl bg-slate-800 px-4 py-2 font-semibold text-white">
           Back to Dashboard
         </Link>
@@ -110,10 +135,15 @@ export default function RequestDetailPage() {
       {error ? <ErrorState message={error} /> : null}
 
       <article className="rounded-2xl border border-slate-200 bg-white px-6 py-5">
+        {loadingFreshDetail ? (
+          <div className="mb-4">
+            <LoadingState label="Loading request..." />
+          </div>
+        ) : null}
+
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-[18px] font-bold text-slate-900">{request.caller_name}</h2>
-            <p className="mt-1 text-[13px] text-slate-400">Call ID: {request.call_id}</p>
           </div>
           <StatusBadge status={request.call_status} />
         </div>
@@ -135,11 +165,6 @@ export default function RequestDetailPage() {
             <p className="mt-1 text-[14px] text-slate-900">{request.call_summary || 'No summary available.'}</p>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Missing Info</p>
-            <p className="mt-1 text-[14px] text-slate-900">{request.missing_info || 'None noted.'}</p>
-          </div>
-
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[14px] text-slate-900">
               <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Price Mentioned</p>
@@ -155,23 +180,25 @@ export default function RequestDetailPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Transcript</p>
-            <p className="mt-1 max-h-[240px] overflow-y-auto whitespace-pre-wrap text-[14px] text-slate-900">
-              {detail?.transcript || 'Transcript unavailable.'}
-            </p>
-          </div>
-
-          {detail?.recording_url ? (
-            <a
-              href={detail.recording_url}
-              target="_blank"
-              rel="noreferrer"
+          <div className="flex flex-wrap gap-2">
+            {detail?.recording_url ? (
+              <a
+                href={detail.recording_url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex rounded-lg border border-slate-200 bg-white px-4 py-2 text-[14px] font-semibold text-slate-900"
+              >
+                Open Recording
+              </a>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => setShowTranscript(true)}
               className="inline-flex rounded-lg border border-slate-200 bg-white px-4 py-2 text-[14px] font-semibold text-slate-900"
             >
-              Open Recording
-            </a>
-          ) : null}
+              Open Transcript
+            </button>
+          </div>
         </div>
 
         <div className="mt-5">
@@ -213,7 +240,34 @@ export default function RequestDetailPage() {
 
         {message ? <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-[13px] font-medium text-emerald-800">{message}</p> : null}
         {actionError ? <p className="mt-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-[13px] font-medium text-rose-800">{actionError}</p> : null}
+        <p className="mt-4 text-[12px] text-slate-400">Call ID: {request.call_id}</p>
       </article>
+
+      {showTranscript ? (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 p-4"
+          onClick={() => setShowTranscript(false)}
+        >
+          <div
+            className="w-full max-w-2xl rounded-xl border border-slate-200 bg-white p-4"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-[16px] font-semibold text-slate-900">Transcript</h3>
+              <button
+                type="button"
+                onClick={() => setShowTranscript(false)}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1 text-[13px] font-medium text-slate-900"
+              >
+                Close
+              </button>
+            </div>
+            <div className="max-h-[70vh] overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-[14px] text-slate-900">
+              <p className="whitespace-pre-wrap">{detail?.transcript || 'Transcript unavailable.'}</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }

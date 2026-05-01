@@ -15,7 +15,7 @@ export default function AppLayout() {
         <div className="mx-auto flex w-full max-w-[1100px] items-center justify-between px-6 py-4">
           <div>
             <p className="text-[13px] text-slate-400">Notary by MKR</p>
-            <h1 className="text-[22px] font-semibold text-slate-900">CRM Dashboard</h1>
+            <h1 className="text-[22px] font-semibold text-slate-900">Dispatch</h1>
           </div>
           <button
             onClick={handleLogout}
