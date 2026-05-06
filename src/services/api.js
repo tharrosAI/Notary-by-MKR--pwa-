@@ -9,6 +9,7 @@ const endpoints = {
 
 const webhooks = {
   whitelistAdd: import.meta.env.VITE_WHITELIST_ADD_URL || 'https://automation.tharrosai.com/webhook/whitelist-add',
+  whitelistList: import.meta.env.VITE_WHITELIST_LIST_URL || 'https://automation.tharrosai.com/webhook/whitelist-list',
   reportIssue: import.meta.env.VITE_REPORT_ISSUE_URL || 'https://automation.tharrosai.com/webhook/report-issue',
 }
 
@@ -184,6 +185,20 @@ export async function getMetrics() {
 
 export async function submitWhitelistContact(payload) {
   return postWebhookJson(webhooks.whitelistAdd, payload)
+}
+
+export async function getWhitelistContacts() {
+  try {
+    const rawData = await fetchJson(webhooks.whitelistList, { method: 'GET' })
+    const data = unwrapN8nResponse(rawData)
+    const contacts = Array.isArray(data) ? data : data?.contacts
+    if (!Array.isArray(contacts)) {
+      return { contacts: [], error: 'No contacts found.' }
+    }
+    return { contacts, error: '' }
+  } catch (error) {
+    return { contacts: [], error: error.message || 'Unable to load contacts.' }
+  }
 }
 
 export async function submitIssueReport(payload) {

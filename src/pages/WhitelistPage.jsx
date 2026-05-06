@@ -1,11 +1,26 @@
-import { useState } from 'react'
-import { submitWhitelistContact } from '../services/api'
+import { useEffect, useState } from 'react'
+import { getWhitelistContacts, submitWhitelistContact } from '../services/api'
 
 export default function WhitelistPage() {
   const [form, setForm] = useState({ name: '', phone_number: '', notes: '' })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
+  const [contacts, setContacts] = useState([])
+  const [contactsLoading, setContactsLoading] = useState(true)
+  const [contactsError, setContactsError] = useState('')
+
+  async function loadContacts() {
+    setContactsLoading(true)
+    const result = await getWhitelistContacts()
+    setContacts(result.contacts)
+    setContactsError(result.error)
+    setContactsLoading(false)
+  }
+
+  useEffect(() => {
+    loadContacts()
+  }, [])
 
   function updateField(event) {
     const { name, value } = event.target
@@ -32,6 +47,7 @@ export default function WhitelistPage() {
       })
       setSuccess('Whitelist contact added.')
       setForm({ name: '', phone_number: '', notes: '' })
+      await loadContacts()
     } catch (submitError) {
       setError(submitError.message || 'Unable to add whitelist contact.')
     } finally {
@@ -95,7 +111,25 @@ export default function WhitelistPage() {
 
       <div className="rounded-2xl border border-slate-200 bg-white p-5">
         <h3 className="text-[13px] font-semibold uppercase tracking-[0.08em] text-slate-400">Contacts</h3>
-        <p className="mt-2 text-[14px] text-slate-700">Whitelist contacts will appear here once connected.</p>
+        {contactsLoading ? <p className="mt-2 text-[14px] text-slate-700">Loading contacts...</p> : null}
+        {!contactsLoading && contactsError ? <p className="mt-2 text-[14px] text-slate-700">Unable to load contacts right now.</p> : null}
+        {!contactsLoading && !contacts.length ? (
+          <p className="mt-2 text-[14px] text-slate-700">Whitelist contacts will appear here once connected.</p>
+        ) : null}
+
+        {!contactsLoading && contacts.length ? (
+          <ul className="mt-4 space-y-3">
+            {contacts.map((contact, index) => (
+              <li key={`${contact.phone_number || 'contact'}-${index}`} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <p className="text-[14px] font-semibold text-slate-900">{contact.name?.trim() || 'Unnamed Contact'}</p>
+                <p className="mt-1 text-[14px] text-slate-700">{contact.phone_number || 'N/A'}</p>
+                {contact.notes ? <p className="mt-1 text-[13px] text-slate-700">{contact.notes}</p> : null}
+                {contact.active ? <p className="mt-1 text-[12px] text-slate-500">Active: {contact.active}</p> : null}
+                {contact.created_at ? <p className="mt-1 text-[12px] text-slate-500">Created: {contact.created_at}</p> : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
     </section>
   )
