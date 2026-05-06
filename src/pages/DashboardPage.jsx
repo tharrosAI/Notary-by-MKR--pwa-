@@ -124,7 +124,7 @@ export default function DashboardPage() {
             onClick={() => setShowAdvancedMetrics((current) => !current)}
             className="mt-4 rounded-full border border-slate-200 bg-white px-3 py-2 text-[13px] font-medium text-slate-900 transition hover:bg-slate-50"
           >
-            {showAdvancedMetrics ? 'Hide System Metrics' : 'Show System Metrics'}
+            {showAdvancedMetrics ? 'Hide Advanced Metrics' : 'Show Advanced Metrics'}
           </button>
 
           {showAdvancedMetrics ? (
@@ -140,9 +140,6 @@ export default function DashboardPage() {
                   helper="minutes"
                 />
                 <MetricCard label="Total Minutes" value={metrics ? numberWithMaxTwoDecimals(metricValue.totalMinutes) : '—'} />
-                <MetricCard label="Pricing Questions" value={metricValue.pricingQuestions ?? '—'} />
-                <MetricCard label="Availability Questions" value={metricValue.availabilityQuestions ?? '—'} />
-                <MetricCard label="General Questions" value={metricValue.generalQuestions ?? '—'} />
                 <MetricCard label="Spam Filtered" value={metricValue.spamFiltered ?? '—'} />
                 <MetricCard label="Denied Requests" value={metricValue.deniedRequests ?? '—'} />
               </div>

@@ -165,11 +165,7 @@ export default function RequestDetailPage() {
             <p className="mt-1 text-[14px] text-slate-900">{request.call_summary || 'No summary available.'}</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[14px] text-slate-900">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Price Mentioned</p>
-              <p>{request.price_mentioned ? 'Yes' : 'No'}</p>
-            </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-1">
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-[14px] text-slate-900">
               <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Quoted Price</p>
               <p>{request.quoted_price ? `$${request.quoted_price}` : 'N/A'}</p>
@@ -198,13 +194,13 @@ export default function RequestDetailPage() {
         </div>
 
         <div className="mt-5">
-          <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Michael Notes</label>
+          <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Notes</label>
           <textarea
             rows={4}
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
             className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-[14px] text-slate-900"
-            placeholder="Add note to send with status update"
+            placeholder="Add note"
           />
           <button
             type="button"

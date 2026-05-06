@@ -60,10 +60,13 @@ async function fetchJson(url, options = {}) {
 }
 
 export async function login(credentials) {
-  if (credentials.username && credentials.password) {
+  const username = (credentials.username || '').trim().toLowerCase()
+  const password = credentials.password || ''
+
+  if (username === 'info@notarybymkr.com' && password === 'sk84fj92!') {
     return { token: 'mock-notary-token', user: { name: 'MKR Notary' } }
   }
-  throw new Error('Please enter username and password.')
+  throw new Error('Invalid username or password.')
 }
 
 export async function getRequests() {
