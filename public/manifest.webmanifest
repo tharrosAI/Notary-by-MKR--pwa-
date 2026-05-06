@@ -1,17 +1,23 @@
 {
-  "name": "Notary by MKR Dashboard",
-  "short_name": "Notary MKR",
+  "name": "Notary by MKR",
+  "short_name": "MKR",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#edf3f5",
-  "theme_color": "#1f6f7a",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f172a",
   "description": "Mobile dashboard for managing notary requests.",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/Notary-by-MKR--pwa-/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
+    },
+    {
+      "src": "/Notary-by-MKR--pwa-/favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }
