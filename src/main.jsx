@@ -6,6 +6,7 @@ import AppLayout from './components/AppLayout'
 import DashboardPage from './pages/DashboardPage'
 import LoginPage from './pages/LoginPage'
 import RequestDetailPage from './pages/RequestDetailPage'
+import WhitelistPage from './pages/WhitelistPage'
 import { isAuthenticated } from './utils/auth'
 
 function ProtectedRoute({ children }) {
@@ -26,6 +27,7 @@ const router = createHashRouter([
     ),
     children: [
       { index: true, element: <DashboardPage /> },
+      { path: 'whitelist', element: <WhitelistPage /> },
       { path: 'request/:id', element: <RequestDetailPage /> },
     ],
   },

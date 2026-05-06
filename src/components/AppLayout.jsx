@@ -37,6 +37,16 @@ export default function AppLayout() {
           >
             Dashboard
           </NavLink>
+          <NavLink
+            to="/whitelist"
+            className={({ isActive }) =>
+              `rounded-lg px-4 py-2 text-[14px] font-semibold transition ${
+                isActive ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-white text-slate-900'
+              }`
+            }
+          >
+            Whitelist
+          </NavLink>
         </nav>
       </header>
 

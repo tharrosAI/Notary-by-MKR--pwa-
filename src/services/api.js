@@ -7,6 +7,11 @@ const endpoints = {
   metrics: 'https://automation.tharrosai.com/webhook/notary-metrics',
 }
 
+const webhooks = {
+  whitelistAdd: import.meta.env.VITE_WHITELIST_ADD_URL || 'https://automation.tharrosai.com/webhook/whitelist-add',
+  reportIssue: import.meta.env.VITE_REPORT_ISSUE_URL || 'https://automation.tharrosai.com/webhook/report-issue',
+}
+
 function unwrapN8nResponse(data) {
   if (Array.isArray(data)) return data[0] || null
   return data
@@ -60,6 +65,22 @@ async function fetchJson(url, options = {}) {
   }
 
   return response.json()
+}
+
+async function postWebhookJson(url, payload) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Request failed (${response.status})`)
+  }
+
+  return { success: true }
 }
 
 export async function login(credentials) {
@@ -161,4 +182,12 @@ export async function getMetrics() {
   }
 }
 
-export { endpoints }
+export async function submitWhitelistContact(payload) {
+  return postWebhookJson(webhooks.whitelistAdd, payload)
+}
+
+export async function submitIssueReport(payload) {
+  return postWebhookJson(webhooks.reportIssue, payload)
+}
+
+export { endpoints, webhooks }
