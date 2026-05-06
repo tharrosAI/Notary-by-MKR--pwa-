@@ -22,6 +22,12 @@ export default function WhitelistPage() {
     loadContacts()
   }, [])
 
+  function isActiveContact(value) {
+    if (typeof value === 'boolean') return value
+    if (typeof value === 'string') return ['true', 'yes', '1'].includes(value.toLowerCase())
+    return false
+  }
+
   function updateField(event) {
     const { name, value } = event.target
     setForm((prev) => ({ ...prev, [name]: value }))
@@ -120,12 +126,19 @@ export default function WhitelistPage() {
         {!contactsLoading && contacts.length ? (
           <ul className="mt-4 space-y-3">
             {contacts.map((contact, index) => (
-              <li key={`${contact.phone_number || 'contact'}-${index}`} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <p className="text-[14px] font-semibold text-slate-900">{contact.name?.trim() || 'Unnamed Contact'}</p>
-                <p className="mt-1 text-[14px] text-slate-700">{contact.phone_number || 'N/A'}</p>
-                {contact.notes ? <p className="mt-1 text-[13px] text-slate-700">{contact.notes}</p> : null}
-                {contact.active ? <p className="mt-1 text-[12px] text-slate-500">Active: {contact.active}</p> : null}
-                {contact.created_at ? <p className="mt-1 text-[12px] text-slate-500">Created: {contact.created_at}</p> : null}
+              <li key={`${contact.phone_number || 'contact'}-${index}`} className="rounded-xl border border-slate-200 bg-white p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[14px] font-semibold text-slate-900">{contact.name?.trim() || 'Unnamed Contact'}</p>
+                    <p className="mt-1 text-[14px] text-slate-700">{contact.phone_number || 'N/A'}</p>
+                  </div>
+                  {isActiveContact(contact.active) ? (
+                    <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700">Active</span>
+                  ) : null}
+                </div>
+
+                {contact.notes ? <p className="mt-3 text-[13px] text-slate-700">{contact.notes}</p> : null}
+                {contact.created_at ? <p className="mt-2 text-[12px] text-slate-500">Created {contact.created_at}</p> : null}
               </li>
             ))}
           </ul>
