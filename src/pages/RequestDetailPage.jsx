@@ -82,6 +82,7 @@ export default function RequestDetailPage() {
   }, [id, seededRequest])
 
   const request = useMemo(() => detail?.call, [detail])
+  const primarySummary = request?.full_summary?.trim() || request?.caller_summary?.trim() || 'No summary available.'
 
   async function handleStatus(status) {
     if (!request || updating) return
@@ -162,7 +163,7 @@ export default function RequestDetailPage() {
         <div className="mt-4 space-y-3">
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">Call Summary</p>
-            <p className="mt-1 text-[14px] text-slate-900">{request.call_summary || 'No summary available.'}</p>
+            <p className="mt-1 text-[14px] text-slate-900">{primarySummary}</p>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-1">

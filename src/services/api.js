@@ -20,6 +20,8 @@ function normalizeBoolean(value) {
 
 function normalizeRequest(request) {
   const callbackValue = request.needs_michael_callback ?? request.needs_micheal_callback
+  const callerSummary = request.caller_summary ?? request.call_summary ?? ''
+  const fullSummary = request.full_summary ?? ''
   return {
     call_id: String(request.call_id || ''),
     timestamp: request.timestamp || '',
@@ -33,7 +35,8 @@ function normalizeRequest(request) {
     preferred_time: request.preferred_time || '',
     urgency: request.urgency || 'normal',
     needs_michael_callback: normalizeBoolean(callbackValue),
-    call_summary: request.call_summary || '',
+    caller_summary: callerSummary,
+    full_summary: fullSummary,
     price_mentioned: normalizeBoolean(request.price_mentioned),
     quoted_price: Number(request.quoted_price || 0),
     confidence_score: Number(request.confidence_score || 0),

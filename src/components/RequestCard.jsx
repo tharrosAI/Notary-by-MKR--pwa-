@@ -36,6 +36,7 @@ export default function RequestCard({ request }) {
   const quotedPrice = parseQuotedPrice(request.quoted_price)
   const intent = getIntentLabel(request)
   const hasDateOrTime = Boolean(request.preferred_date || request.preferred_time)
+  const primarySummary = request.full_summary?.trim() || request.caller_summary?.trim() || 'Unavailable'
 
   return (
     <article className="rounded-2xl border border-slate-200 bg-white px-6 py-5">
@@ -70,7 +71,7 @@ export default function RequestCard({ request }) {
       </div>
 
       <p className="mt-4 border-t border-slate-100 pt-4 text-[13px] text-slate-700">
-        {request.call_summary || 'Unavailable'}
+        {primarySummary}
       </p>
 
       <Link
